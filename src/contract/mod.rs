@@ -185,14 +185,17 @@ impl<T: Transport> Contract<T> {
     }
 
     /// Execute a contract function and wait for confirmations
-    pub async fn call_with_confirmations(
+    pub async fn call_with_confirmations<A>(
         &self,
         func: &str,
         params: impl Tokenize,
-        from: Address,
+        from: A,
         options: Options,
         confirmations: usize,
-    ) -> crate::error::Result<TransactionReceipt> {
+    ) -> crate::error::Result<TransactionReceipt>
+    where
+        A: Into<Address>,
+    {
         let poll_interval = time::Duration::from_secs(1);
 
         let fn_data = self
@@ -203,7 +206,7 @@ impl<T: Transport> Contract<T> {
             // `contract::Error` instead of more generic `Error`.
             .map_err(|err| crate::error::Error::Decoder(format!("{:?}", err)))?;
         let transaction_request = TransactionRequest {
-            from,
+            from: from.into(),
             to: Some(self.address),
             gas: options.gas,
             gas_price: options.gas_price,
