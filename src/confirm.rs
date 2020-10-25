@@ -301,27 +301,27 @@ impl<T: Transport> Future for SendTransactionWithConfirmation<T> {
 /// Sends transaction and returns future resolved after transaction is confirmed
 pub fn send_transaction_with_confirmation<T>(
     transport: T,
-    tx: TransactionRequest,
+    tx: impl Into<TransactionRequest>,
     poll_interval: Duration,
     confirmations: usize,
 ) -> SendTransactionWithConfirmation<T>
 where
     T: Transport,
 {
-    SendTransactionWithConfirmation::new(transport, tx, poll_interval, confirmations)
+    SendTransactionWithConfirmation::new(transport, tx.into(), poll_interval, confirmations)
 }
 
 /// Sends raw transaction and returns future resolved after transaction is confirmed
 pub fn send_raw_transaction_with_confirmation<T>(
     transport: T,
-    tx: Bytes,
+    tx: impl Into<Bytes>,
     poll_interval: Duration,
     confirmations: usize,
 ) -> SendTransactionWithConfirmation<T>
 where
     T: Transport,
 {
-    SendTransactionWithConfirmation::raw(transport, tx, poll_interval, confirmations)
+    SendTransactionWithConfirmation::raw(transport, tx.into(), poll_interval, confirmations)
 }
 
 #[cfg(test)]
