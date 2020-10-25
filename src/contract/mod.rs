@@ -222,15 +222,16 @@ impl<T: Transport> Contract<T> {
     }
 
     /// Estimate gas required for this function call.
-    pub async fn estimate_gas<P>(&self, func: &str, params: P, from: Address, options: Options) -> Result<U256>
+    pub async fn estimate_gas<P, A>(&self, func: &str, params: P, from: A, options: Options) -> Result<U256>
     where
         P: Tokenize,
+        A: Into<Address>,
     {
         let data = self.abi.function(func)?.encode_input(&params.into_tokens())?;
         self.eth
             .estimate_gas(
                 CallRequest {
-                    from: Some(from),
+                    from: Some(from.into()),
                     to: Some(self.address),
                     gas: options.gas,
                     gas_price: options.gas_price,
