@@ -114,9 +114,10 @@ impl<T: Transport> Contract<T> {
     }
 
     /// Execute a contract function
-    pub async fn call<P>(&self, func: &str, params: P, from: Address, options: Options) -> Result<H256>
+    pub async fn call<P, A>(&self, func: &str, params: P, from: A, options: Options) -> Result<H256>
     where
         P: Tokenize,
+        A: Into<Address>,
     {
         let data = self.abi.function(func)?.encode_input(&params.into_tokens())?;
         let Options {
@@ -128,7 +129,7 @@ impl<T: Transport> Contract<T> {
         } = options;
         self.eth
             .send_transaction(TransactionRequest {
-                from,
+                from: from.into(),
                 to: Some(self.address),
                 gas,
                 gas_price,
