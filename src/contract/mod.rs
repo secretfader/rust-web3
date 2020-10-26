@@ -93,12 +93,22 @@ impl<T: Transport> Contract<T> {
 
 impl<T: Transport> Contract<T> {
     /// Creates new Contract Interface given blockchain address and ABI
-    pub fn new(eth: Eth<T>, address: Address, abi: ethabi::Contract) -> Self {
-        Contract { address, eth, abi }
+    pub fn new<A>(eth: Eth<T>, address: A, abi: ethabi::Contract) -> Self
+    where
+        A: Into<Address>,
+    {
+        Contract {
+            address: address.into(),
+            eth,
+            abi,
+        }
     }
 
     /// Creates new Contract Interface given blockchain address and JSON containing ABI
-    pub fn from_json(eth: Eth<T>, address: Address, json: &[u8]) -> ethabi::Result<Self> {
+    pub fn from_json<A>(eth: Eth<T>, address: A, json: &[u8]) -> ethabi::Result<Self>
+    where
+        A: Into<Address>,
+    {
         let abi = ethabi::Contract::load(json)?;
         Ok(Self::new(eth, address, abi))
     }
